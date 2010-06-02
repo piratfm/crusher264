@@ -16,7 +16,8 @@ $ sample/crusher264 -i 0 -s 640x480 -b 1500000 -a 128000 -c 2 -f qbox -o test.qb
 }}}
 
 === crusherRTMP ===
-Publishing CrusherCapture stream to rtmp-server and saving audio-video to dump.flv. Stream parameters set to: composite-video input, with 320x240 image size and bitrate 300Kbps, also 2-channel audio captured with 48 kHz and bitrate 64Kbps. Publishing works only if librtmp with headers installed.
+*Publishing works only if librtmp with headers installed.*
+Publishing CrusherCapture stream to rtmp-server and saving audio-video to dump.flv. Stream parameters set to: composite-video input, with 320x240 image size and bitrate 300Kbps, also 2-channel audio captured with 48 kHz and bitrate 64Kbps. 
 {{{
 $ sample/crusherRTMP -i 0 -s 320x240 -b 300000 -a 64000 -f dump.flv rtmp://example.com/live/flv:livestream.flv
 }}}
