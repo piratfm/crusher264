@@ -2,12 +2,20 @@
 
 == Mode Description ==
 
-In this mode USB-Device receiving analogue audio-video, convert it to digital and encode, after that it send encoded data over USB to host-pc.
+In this mode USB-Device receiving video over USB fro host-pc, encode it, and send this data over USB to host-pc.
 
 
-== Capture-mode features: ==
+== Encoder-mode features: ==
 
  # H264 Baseline profile (I & P frames only).
  # Bitrate, framerate, width, height regulation.
- # Due lack of deinterlacing, image width can be 288px max (with proper aspect ratio settings), that's what "blackmagic design" guys calls full 720x576.
- # AAC Audio capture with fixed samplerate 48kHz (may be other, when set proper clock). 
+ # Gop size set.
+ # RC buffer size set.
+ # Deblocking filter flag (+alpha & beta values).
+ # Flag to create new gop on scene change.
+ # Real-time (or faster) conversion up to 640x480.
+ # Max image dimensions: 768x576.
+
+=== Comments for Turbo.264 (Not HD): ===
+
+Real-Time encoding possible only for image-dimensions lower than 640x480. Smaller frame size, gives faster encoding.
