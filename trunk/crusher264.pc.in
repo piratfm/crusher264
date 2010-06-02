@@ -1,0 +1,15 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@/crusher264
+toolsdir=${exec_prefix}/bin
+cppflags=@CRUSHER264_CPPFLAGS@
+cflags_only=@CRUSHER264_CFLAGS@
+
+
+Name: crusher264
+Description: H264 Hardware encoder library (Crusher reference design, based on Maxim MG1264 chip)
+Requires: @CRUSHER264_REQUIRES@
+Version: @VERSION@
+Libs: @CRUSHER264_LIBS@
+Cflags: -I${includedir} @CRUSHER264_CFLAGS@
