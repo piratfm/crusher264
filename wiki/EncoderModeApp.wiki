@@ -1,6 +1,6 @@
 #summary Applications example for encoder-devices.
 
-=== Stand-Alone Applications ===
+= Stand-Alone Applications =
 
 At crusher264/sample directory, some sample appications can be founded, like crusher264, that able to work with encoder-sticks. It can send RAW-uncompressed video to device and receive RAW h264 stream.
 
@@ -16,7 +16,7 @@ $ sample/crusher264 -i test720x576.yuv -s 720x576 -b 1500000 -o test.h264
 
 Now we have test.h264 output RAW H264 file that playable by mplayer. You can MUX it to flv/mp4/etc by FFmpeg/mencoder/VLC/gpac/mp4box.
 
-=== Patched FFmpeg ===
+= Patched FFmpeg =
 
 Usage of this device would be much simpler, if FFmpeg patched by [http://code.google.com/p/crusher264/wiki/ffmpeg libcrusher264] patch, that provides additional H264 encoder to libavcodec.
 
