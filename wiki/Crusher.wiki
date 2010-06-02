@@ -10,6 +10,8 @@
  * Real-time (or faster) conversion up to 640x480.
  * Max image dimensions: 768x576.
 
+In this mode USB-Device receiving video over USB fro host-pc, encode it, and send this data over USB to host-pc.
+
 *Note:* Real-time encoding possible on framesize less than 640x480, lesser framesize works faster.
 
 
