@@ -8,6 +8,9 @@
  * can encode HD streams up to 1080i 50Hz
  * _lack of deinterlacing?_
 
+
+In this mode USB-Device receiving compressed mpeg video over USB from host-pc, encode it, and send this data over USB to host-pc. 
+
 = Images: =
 <img src=http://crusher264.googlecode.com/svn/wiki/crusherhdtop.jpg>
 <img src=http://crusher264.googlecode.com/svn/wiki/crusherhdbottom.jpg>
