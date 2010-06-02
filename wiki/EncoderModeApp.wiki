@@ -2,23 +2,23 @@
 
 === Stand-Alone Applications ===
 
-At crusher264/sample directory, You can find crusher264 application, that able to work with encoder-sticks. It can send RAW-uncompressed video to device and receive RAW h264 stream.
+At crusher264/sample directory, some sample appications can be founded, like crusher264, that able to work with encoder-sticks. It can send RAW-uncompressed video to device and receive RAW h264 stream.
 
-First You have to create RAW-file, for example with FFmpeg use this command:
+First, RAW-file have to be created, for example with FFmpeg use this command:
 {{{
 $ ffmpeg -i test.mpg -f rawvideo -an -deinterlace -s 720x576 -pix_fmt yuv420p -y test720x576.yuv
 }}}
 
-Where test.mpg - Your input file, that You want to encode to H264. As output You will have large file, called test720x576.yuv, this file can be sent to device with crusher264 application:
+Where test.mpg - input file, that have to be encoded to H264. That command creates a large file, called test720x576.yuv, this file can be sent to device with crusher264 application:
 {{{
 $ sample/crusher264 -i test720x576.yuv -s 720x576 -b 1500000 -o test.h264
 }}}
 
-And now You have test.h264 file that playable by mplayer. You can MUX it to flv/mp4/etc by FFmpeg/mencoder/VLC/gpac/mp4box.
+Now we have test.h264 output RAW H264 file that playable by mplayer. You can MUX it to flv/mp4/etc by FFmpeg/mencoder/VLC/gpac/mp4box.
 
 === Patched FFmpeg ===
 
-If You [http://code.google.com/p/crusher264/wiki/ffmpeg patch] ffmpeg by adding libcrusher264 as encoder, then usage of this device would be much simpler.
+Usage of this device would be much simpler, if FFmpeg patched by [http://code.google.com/p/crusher264/wiki/ffmpeg libcrusher264] encoder patch, that provides additional H264 encoder to libavcodec.
 
 For example, here is some commands to transcode various video's to H264, that utilize hardware encoder:
 {{{
