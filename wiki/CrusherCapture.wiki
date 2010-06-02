@@ -1,11 +1,18 @@
 #summary CrusherCapture reference design platform
 
-= Image =
+= Device options: =
+ * H264 Baseline profile (I & P frames only).
+ * Bitrate, framerate, width, height regulation.
+ * Due lack of deinterlacing, image width can be 288px max (with proper aspect ratio settings), that's what "blackmagic design" guys calls full 720x576.
+ * AAC Audio capture with fixed samplerate 48kHz (may be other, when set proper clock?).
 
-=== Reference Design ===
+
+= Image: =
+
+=== Reference Design: ===
 <img src=http://crusher264.googlecode.com/svn/wiki/crushercapture.jpg>
 
-=== Blackmagic Video Recorder Stick ===
+=== Blackmagic Video Recorder Stick: ===
 <img src=http://crusher264.googlecode.com/svn/wiki/blackmagic.jpg>
 
 
