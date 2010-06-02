@@ -1,0 +1,57 @@
+Name:           libcrusher264
+Version:        @VERSION@
+Release:        0
+URL:            http://tipok.org.ua/node/13
+Group:          System/Libraries
+License:        Open Source
+Summary:        H264 Hardware encoder library (Crusher reference platform, based on Maxim MG1264 chip)
+Source:         http://tipok.org.ua/downloads/hardware/crusher264/%{name}-%{version}.tar.gz
+Autoreqprov:    on
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+
+%description
+H264 Hardware encoder library (Crusher reference platform, based on Maxim MG1264 chip)
+
+http://tipok.org.ua/node/13
+
+%package devel
+Group:          System/Libraries
+Summary:        H264 Hardware encoder library
+Requires:       %{name} = %{version} glibc-devel
+
+%description devel
+H264 Hardware encoder library (Crusher reference platform, based on Maxim MG1264 chip)
+
+http://tipok.org.ua/node/13
+
+%prep
+%setup -q
+
+%build
+%configure
+make %{?jobs:-j %jobs}
+#make distcheck
+
+%install
+%makeinstall
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post
+%run_ldconfig
+
+%postun
+%run_ldconfig
+
+%files
+%defattr (-, root, root)
+%doc AUTHORS ChangeLog COPYING NEWS README TODO readme.txt
+%{_bindir}/*
+%{_libdir}/*.so.*
+
+%files devel
+%defattr (-, root, root)
+%{_includedir}/libcrusher264
+%{_libdir}/*.so
+%{_libdir}/*.*a
