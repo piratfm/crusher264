@@ -1,12 +1,11 @@
 #summary Crusher reference design platform
 
-= View =
+= Image =
 <img src=http://crusher264.googlecode.com/svn/wiki/crusher.jpg>
 
 
-= Details =
+= Inside device: =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+ * USB-controller: Cypress EZ2 ([http://www.cypress.com/?mpn=CY7C68013A-56LFXC&l=1 CY7C68013A-56LFXC])
+ * Encoder: Mobilygen [http://www.mobilygen.com/default.asp?contentID=20 MG1264]
+ * RAM: EtronTech ([http://www.alldatasheet.com/datasheet-pdf/pdf/208058/ETRON/EM639165TS-7G.html EM639165TS-7G]), or similar.
