@@ -1,6 +1,19 @@
 #summary Crusher reference design platform
 
-= Image =
+= Device options: =
+ * H264 Baseline profile (I & P frames only).
+ * Bitrate, framerate, width, height regulation.
+ * Gop size set.
+ * RC buffer size set.
+ * Deblocking filter flag (+alpha & beta values).
+ * Flag to create new gop on scene change.
+ * Real-time (or faster) conversion up to 640x480.
+ * Max image dimensions: 768x576.
+
+*Note:* Real-time encoding possible on framesize less than 640x480, lesser framesize works faster.
+
+
+= Image: =
 <img src=http://crusher264.googlecode.com/svn/wiki/crusher.jpg>
 
 
