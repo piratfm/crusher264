@@ -1,0 +1,19 @@
+#summary Applications example for encoder-devices.
+
+=== Stand-Alone Applications ===
+
+At crusher264/sample directory, You can find crusher264 application, that able to work with encoder-sticks. It can send RAW-uncompressed video to device and receive RAW h264 stream.
+
+First You have to create RAW-file, for example with FFmpeg use this command:
+{{{
+$ ffmpeg -i test.mpg -f rawvideo -an -deinterlace -s 720x576 -pix_fmt yuv420p -y test720x576.yuv
+}}}
+
+Where test.mpg - Your input file, that You want to encode to H264. As output You will have large file, called test720x576.yuv, this file can be sent to device with crusher264 application:
+{{{
+$ sample/crusher264 -i test720x576.yuv -s 720x576 -b 1500000 -o test.h264
+}}}
+
+And now You have test.h264 file that playable by mplayer. You can MUX it to flv/mp4/etc by FFmpeg/mencoder/VLC/gpac/mp4box.
+
+
