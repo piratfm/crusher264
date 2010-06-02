@@ -1,11 +1,11 @@
 #summary One-sentence summary of this page.
 
-= Mode Description =
+== Mode Description ==
 
 In this mode USB-Device receiving analogue audio-video, convert it to digital and encode, after that it send encoded data over USB to host-pc.
 
 
-= Capture-mode features: =
+== Capture-mode features: ==
 
  # H264 Baseline profile (I & P frames only).
  # Bitrate, framerate, width, height regulation.
