@@ -1,6 +1,6 @@
 #summary Applications example for capture-devices.
 
-== Stand-Alone Applications ==
+= Stand-Alone Applications =
 
 === crusher264 ===
 Here is sample to capture from CrusherCapture (Blackmagic Video Recorder):
@@ -21,7 +21,7 @@ Publishing CrusherCapture stream to rtmp-server and saving audio-video to dump.f
 $ sample/crusherRTMP -i 0 -s 320x240 -b 300000 -a 64000 -f dump.flv rtmp://example.com/live/flv:livestream.flv
 }}}
 
-== Patched FFmpeg ==
+= Patched FFmpeg =
 
 This samples for patched ffmpeg. Additional parameters, such as bitrates, audio-codec, device-number given by "-i" parameter:
 {{{
