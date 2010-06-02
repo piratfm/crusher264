@@ -6,11 +6,8 @@
 
 = Inside device: =
 
- * Encoder: Mobilygen [http://www.mobilygen.com/default.asp?contentID=20 MG1264]
- * RAM: EtronTech ([http://www.alldatasheet.com/datasheet-pdf/pdf/208058/ETRON/EM639165TS-7G.html EM639165TS-7G]), or similar.
-
  * USB-controller: Cypress EZ2 ([http://www.cypress.com/?mpn=CY7C68013A-56LFXC&l=1 CY7C68013A-56LFXC])
-    * Encoder: Mobilygen/Maxim [http://www.maxim-ic.com/quick_view2.cfm/qv_pk/6092 MG3500]
-    * RAM: 2xDDR2 ProMOS [http://www.promos.com.tw/website/html/english/product/V59/V59C1512164QC.pdf V59C1512164QCF3] (2x64Mb).
-    * unknown i2c EEPROM ATMLH936 (maybe AT93C66) _(but only 2 wires used)_
-    * 99Ti 7C _(i2c clock generator?)_
+ * Encoder: Mobilygen/Maxim [http://www.maxim-ic.com/quick_view2.cfm/qv_pk/6092 MG3500]
+ * RAM: 2xDDR2 ProMOS [http://www.promos.com.tw/website/html/english/product/V59/V59C1512164QC.pdf V59C1512164QCF3] (2x64Mb).
+ * unknown i2c EEPROM ATMLH936 (maybe AT93C66) _(but only 2 wires used)_
+ * 99Ti 7C _(i2c clock generator?)_
