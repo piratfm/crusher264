@@ -34,7 +34,7 @@ Creating MPEG-TS stream:
 $ ffmpeg -flags +loop -i test.mpg -f mpegts -vcodec libcrusher264 -an -deinterlace -g 25 -sc_threshold 1 -b 600k -s 640x480 -y test.ts
 }}}
 
-Transcode live-stream in-the-fly and save it to MPEG-TS file:
+Transcode live-stream on-the-fly and save it to MPEG-TS file:
 {{{
 $ ffmpeg -async 1 -flags +loop -i udp://239.102.1.2:5004 -f mpegts -vcodec libcrusher264 -acodec mp2 -ab 128k -deinterlace -g 25 \
 > -sc_threshold 1 -b 500k -s 320x240 -y test.ts
