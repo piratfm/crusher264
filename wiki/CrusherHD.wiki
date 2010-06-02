@@ -3,7 +3,7 @@
 = Image =
 <img src=http://crusher264.googlecode.com/svn/wiki/crusherhdtop.jpg>
 <img src=http://crusher264.googlecode.com/svn/wiki/crusherhdbottom.jpg>
-
+_i've already tried to read eeprom contents, but unluck_
 
 = Inside device: =
 
