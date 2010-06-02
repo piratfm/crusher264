@@ -1,0 +1,17 @@
+#summary CrusherCapture reference design platform
+
+= Image =
+
+<img src=http://crusher264.googlecode.com/svn/wiki/crushercapture.jpg>
+
+
+= Inside device: =
+
+`as in Crusher design, budt some adc's and eeprom added`
+
+ * USB-controller: Cypress EZ2 ([http://www.cypress.com/?mpn=CY7C68013A-56LFXC&l=1 CY7C68013A-56LFXC])
+ * Encoder: Mobilygen [http://www.mobilygen.com/default.asp?contentID=20 MG1264]
+ * RAM: EtronTech ([http://www.alldatasheet.com/datasheet-pdf/pdf/208058/ETRON/EM639165TS-7G.html EM639165TS-7G]), or similar.
+ * Video ADC: [http://www.analog.com/en/analog-to-digital-converters/video-decoders/ADV7180/products/product.html ADV7180]
+ * Audio ADC: [http://www.cirrus.com/en/products/pro/detail/P1067.html CS4265]
+ * i2c EEPROM [ 24LC02].
