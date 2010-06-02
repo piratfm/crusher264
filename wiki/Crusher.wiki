@@ -12,8 +12,7 @@
 
 In this mode USB-Device receiving video over USB fro host-pc, encode it, and send this data over USB to host-pc.
 
-*Note:* Real-time encoding possible on framesize less than 640x480, lesser framesize works faster.
-
+*Note:* Real-time encoding possible on framesize less than 640x480. Smaller frame size, gives faster encoding.
 
 = Image: =
 <img src=http://crusher264.googlecode.com/svn/wiki/crusher.jpg>
