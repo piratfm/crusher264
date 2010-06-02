@@ -1,8 +1,7 @@
 #summary Crusher reference design platform
 
 = View =
-
-here must be image
+<img src=http://crusher264.googlecode.com/svn/wiki/crusher.jpg>
 
 
 = Details =
