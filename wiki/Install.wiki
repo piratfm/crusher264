@@ -1,5 +1,10 @@
 #summary How to build/install library and applications.
 
+= Pre-Requests =
+
+You need libusb headers.
+Also if you want to compile RTMP-publishing application, You need librtmp from [http://rtmpdump.mplayerhq.hu/ rtmpdump].
+
 = Building =
 
 Before making executables from sources, You have to download firmwares archive, that avaliable from here: [http://tipok.org.ua/downloads/hardware/crusher264/firmware/firmware.tar.gz firmware.tar.gz]
