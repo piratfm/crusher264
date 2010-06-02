@@ -1,7 +1,7 @@
 #summary CrusherHD reference design platform
 
 = Device Options: =
- *still not full, or some options may not work*
+*still not full, or some options may not work*
  * H264 High/Main/Baseline profiles (I, B & P frames).
  * Supports mpeg streams as input.
  * can encode up to 4 D1 streams at the same time.
