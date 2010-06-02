@@ -1,0 +1,20 @@
+#summary One-sentence summary of this page.
+
+= Building =
+
+Before making executables from sources, You have to download firmwares archive, that avaliable from here: [http://tipok.org.ua/downloads/hardware/crusher264/firmware/firmware.tar.gz firmware.tar.gz]
+
+{{{
+$ tar -xvzf  crusher264-1.1.1.tar.gz
+$ cd crusher264-1.1.1
+$ wget http://tipok.org.ua/downloads/hardware/crusher264/firmware/firmware.tar.gz
+$ tar -xvzf firmware.tar.gz
+$ ./configure
+$ make
+}}}
+
+= Installing =
+
+{{{
+$ sudo make install
+}}}
