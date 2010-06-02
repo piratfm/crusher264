@@ -2,7 +2,11 @@
 
 = Image =
 
+=== Reference Design ===
 <img src=http://crusher264.googlecode.com/svn/wiki/crushercapture.jpg>
+
+=== Blackmagic Video Recorder Stick ===
+<img src=http://crusher264.googlecode.com/svn/wiki/blackmagic.jpg>
 
 
 = Inside device: =
