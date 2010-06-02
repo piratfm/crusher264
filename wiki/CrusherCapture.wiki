@@ -11,7 +11,7 @@
 
 = Inside device: =
 
-`as in Crusher design, budt some adc's and eeprom added`
+_as in Crusher design, but some adc's and eeprom added_
 
  * USB-controller: Cypress EZ2 ([http://www.cypress.com/?mpn=CY7C68013A-56LFXC&l=1 CY7C68013A-56LFXC])
  * Encoder: Mobilygen [http://www.mobilygen.com/default.asp?contentID=20 MG1264]
