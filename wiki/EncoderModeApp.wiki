@@ -16,4 +16,26 @@ $ sample/crusher264 -i test720x576.yuv -s 720x576 -b 1500000 -o test.h264
 
 And now You have test.h264 file that playable by mplayer. You can MUX it to flv/mp4/etc by FFmpeg/mencoder/VLC/gpac/mp4box.
 
+=== Patched FFmpeg ===
 
+If You [http://code.google.com/p/crusher264/wiki/ffmpeg patch] ffmpeg by adding libcrusher264 as encoder, then usage of this device would be much simpler.
+
+For example, here is some commands to transcode various video's to H264, that utilize hardware encoder:
+{{{
+
+Here we produce flv file with h264, that hardware-encoded.
+$ ffmpeg -loglevel debug -async 1 -flags +loop -i input.ts \
+> -f flv -vcodec libcrusher264 -deinterlace -g 25 -r 25 -sc_threshold 1 -b 500k -s 320x240 \
+> -acodec aac -ab 64k -ac 1 -ar 44100 -y test.flv
+}}}
+
+Creating MPEG-TS stream:
+{{{
+$ ffmpeg -flags +loop -i test.mpg -f mpegts -vcodec libcrusher264 -an -deinterlace -g 25 -sc_threshold 1 -b 600k -s 640x480 -y test.ts
+}}}
+
+Transcode live-stream in-the-fly and save it to MPEG-TS file:
+{{{
+$ ffmpeg -async 1 -flags +loop -i udp://239.102.1.2:5004 -f mpegts -vcodec libcrusher264 -acodec mp2 -ab 128k -deinterlace -g 25 \
+> -sc_threshold 1 -b 500k -s 320x240 -y test.ts
+}}}
