@@ -2,7 +2,7 @@
 
 = Device Options: =
 *still not full, or some options may not work*
- * H264 High/Main/Baseline profiles (I, B & P frames).
+ * H264 High/Main/Baseline profiles up to level 4.1.
  * Supports mpeg streams as input.
  * can encode up to 4 D1 streams at the same time.
  * can encode HD streams up to 1080i 50Hz
