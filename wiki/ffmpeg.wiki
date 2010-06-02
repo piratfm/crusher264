@@ -1,6 +1,6 @@
 #summary Patching ffmpeg instruction.
 
-== Introduction ==
+= Introduction =
 
 *This patch not updating so far as FFmpeg, so if it fails, try older versions of ffmpeg (for example 16 Apr 2010)*
 
@@ -13,7 +13,7 @@ This patch adding next features to FFmpeg:
 
 
 
-== Patching ==
+= Patching =
 
 After downloading FFmpeg:
 
