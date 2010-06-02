@@ -1,7 +1,8 @@
 #summary CrusherHD reference design platform
 
 = Image =
-<img src=http://crusher264.googlecode.com/svn/wiki/crusherHD.jpg>
+<img src=http://crusher264.googlecode.com/svn/wiki/crusherhdtop.jpg>
+<img src=http://crusher264.googlecode.com/svn/wiki/crusherhdbottom.jpg>
 
 
 = Inside device: =
