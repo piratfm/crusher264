@@ -21,9 +21,8 @@ Now we have test.h264 output RAW H264 file that playable by mplayer. You can MUX
 Usage of this device would be much simpler, if FFmpeg patched by [http://code.google.com/p/crusher264/wiki/ffmpeg libcrusher264] patch, that provides additional H264 encoder to libavcodec.
 
 For example, here is some commands to transcode various video's to H264, that utilize hardware encoder:
-{{{
 
-Here we produce flv file with h264, that hardware-encoded.
+{{{
 $ ffmpeg -loglevel debug -async 1 -flags +loop -i input.ts \
 > -f flv -vcodec libcrusher264 -deinterlace -g 25 -r 25 -sc_threshold 1 -b 500k -s 320x240 \
 > -acodec aac -ab 64k -ac 1 -ar 44100 -y test.flv
