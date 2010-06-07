@@ -134,11 +134,11 @@ static struct i2c_data cs4265_init[cs4265_init_size] = {
 static int i2c_write(crusher_t *crusher, uint8_t addr, uint8_t busid, uint16_t reg, uint8_t val)
 {
     int ret;
-    uint16_t full_addr = me2be_16(addr << 8 | busid);
+    uint16_t full_addr = busid << 8 | addr;
     XTREME("Write I2C");
     //mg1264_hbrr(crusher, 0x001a, &regiter16);
     ret = usb_control_msg((usb_dev_handle *) crusher->udev, USB_TYPE_VENDOR + USB_RECIP_DEVICE,
-                    EP0_I2C, full_addr, me2le_16(reg), (char *) &val, 0x0001, USB_TIMEOUT);
+                    EP0_I2C, full_addr, reg, (char *) &val, 0x0001, USB_TIMEOUT);
     if (ret != 1)
         ERROR("Write I2C failed.");
     return ret;
@@ -147,11 +147,11 @@ static int i2c_write(crusher_t *crusher, uint8_t addr, uint8_t busid, uint16_t r
 static int i2c_read(crusher_t *crusher, uint8_t addr, uint8_t busid, uint16_t reg, uint8_t *val)
 {
     int ret;
-    uint16_t full_addr = me2be_16(addr << 8 | busid);
+    uint16_t full_addr = busid << 8 | addr;
     XTREME("Read I2C.");
     //mg1264_hbrr(crusher, 0x001a, &regiter16);
     ret = usb_control_msg((usb_dev_handle *) crusher->udev, USB_TYPE_VENDOR + USB_RECIP_DEVICE + USB_ENDPOINT_IN,
-                    EP0_I2C, full_addr, me2le_16(reg), (char *) val, 0x0001, USB_TIMEOUT);
+                    EP0_I2C, full_addr, reg, (char *) val, 0x0001, USB_TIMEOUT);
     if (ret != 1)
         ERROR("Read I2C failed.");
     return ret;

@@ -30,21 +30,89 @@ AC_HELP_STRING([$1],[$2]),[  ][$1] substr([
 dnl check byte ordering
 
 
-AC_TRY_RUN([
-int main()
-{
-	short s = 1;
-	short* ptr = &s;
-	unsigned char c = *((char*)ptr);
-	return c;
-}
 
-]
-, AC_DEFINE(HAVE_BIGENDIAN, [], [use big endian byte ordering])
-, AC_DEFINE(HAVE_LITTLEENDIAN, [], [use little endian byte ordering])
-)
+dnl  ------ define IS_LITTLE_ENDIAN ------
+# We try to use, where possible the headers <endian.h>, <mach/endian.h>,
+# and <machine/endian.h>, in that order.  They must define the macros
+# __LITTLE_ENDIAN and __BYTE_ORDER.  We structure the test so that if they 
+# do NOT define __LITTLE_ENDIAN or __BYTE_ORDER then we will disable
+# the little-endian optimizations, so the resulting code should be correct,
+# but not as fast, if there's a broken endian.h somewhere.
+#
+# If none of those headers exist, we fallback on a runtime test.
+# TODO: support --with-endianness=[little|big]
+
+AH_TEMPLATE(HAVE_BIGENDIAN, [], [use big endian byte ordering])
+AH_TEMPLATE(HAVE_LITTLEENDIAN, [], [use little endian byte ordering])
+
+knows_endianness=0
+is_little_endian=1
+
+AC_MSG_CHECKING([Checking target endianess])
+AC_ARG_WITH([endianness], [APR_HELP_STRING([--with-endianness], [force target CPU endianess [[little|big|auto]] [[default=auto]]])],
+[
+    if test "$with_endianness" = "little"; then
+        is_little_endian=1
+        knows_endianness=1
+    fi
+
+    if test "$with_endianness" = "big"; then
+        is_little_endian=0
+        knows_endianness=1
+    fi
+], [AC_MSG_RESULT([auto])])
 
 
+if test $knows_endianness != 1 ; then
+ AC_CHECK_HEADERS([endian.h], [has_endian_h=1; knows_endianness=1], [has_endian_h=0])
+ if test $knows_endianness = 1 ; then
+  AC_TRY_COMPILE([#include <endian.h>], [
+   switch (1) { case __LITTLE_ENDIAN: break;
+		case __BYTE_ORDER: break; } ],
+    [is_little_endian=0], [is_little_endian=1])
+ else
+
+  # ------------------ try <mach/endian.h>  ------------------
+  AC_CHECK_HEADERS([mach/endian.h], [has_mach_endian_h=1; knows_endianness=1], [has_mach_endian_h=0])
+  if test $knows_endianness = 1 ; then
+    AC_TRY_COMPILE([#include <mach/endian.h>],[
+      switch (1) { case __LITTLE_ENDIAN: break;
+		   case __BYTE_ORDER: break; }
+			      ],
+      [is_little_endian=0], [is_little_endian=1])
+  fi
+  # ------------------ try <machine/endian.h>  ------------------
+  if test $knows_endianness = 0; then
+    AC_CHECK_HEADERS([machine/endian.h], [has_machine_endian_h=1; knows_endianness=1], [has_machine_endian_h=0])
+    if test $knows_endianness = 1 ; then
+      AC_TRY_COMPILE([#include <machine/endian.h>],[
+	switch (1) { case __LITTLE_ENDIAN: break;
+		     case __BYTE_ORDER: break; }
+				],
+	[is_little_endian=0], [is_little_endian=1])
+    fi
+  fi
+  if test $knows_endianness = 0; then
+    AC_MSG_CHECKING([for little-endianness via runtime check])
+    AC_RUN_IFELSE([#include <inttypes.h>
+    int main() {
+      uint32_t v = 0x01020304;
+      return memcmp (&v, "\4\3\2\1", 4) == 0 ? 0 : 1;
+    }
+    ], [is_little_endian=1; result=yes], [is_little_endian=0; result=no])
+    AC_MSG_RESULT($result)
+  fi
+ fi
+fi
+
+AC_MSG_CHECKING([Detect target endianess])
+if test $is_little_endian = 1; then
+  AC_MSG_RESULT([little-endian])
+  AC_DEFINE(HAVE_LITTLEENDIAN)
+else
+  AC_MSG_RESULT([big-endian])
+  AC_DEFINE(HAVE_BIGENDIAN)
+fi
 
 
 dnl ############## Arguments Checks
