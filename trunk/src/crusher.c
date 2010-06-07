@@ -69,11 +69,11 @@ static int8_t check_device(struct usb_device *dev)
 					i, devices[i].idVendor, devices[i].idProduct);
 		    switch (devices[i].cyInit) {
 		        case CYPRRESS_NO_FW:
-		            DEBUG("Device (0x%04x:0x%04x)- USB CPU without firmware.",
+		            DEBUG("Device (0x%04x:0x%04x)- FX2 without firmware.",
                         dev->descriptor.idVendor, dev->descriptor.idProduct);
 		            break;
 		        case CYPRRESS_HAVE_FW:
-		            DEBUG("Device (0x%04x:0x%04x)- USB CPU without firmware.",
+		            DEBUG("Device (0x%04x:0x%04x)- FX2 with firmware.",
 		                dev->descriptor.idVendor, dev->descriptor.idProduct);
 		            break;
 		        default:
@@ -216,9 +216,9 @@ static int crusher_free(crusher_t *crusher)
 void crusher_close(crusher_t *crusher)
 {
 	if (crusher->udev) {
-        usb_reset((usb_dev_handle  *) crusher->udev);
-	    usb_release_interface((usb_dev_handle  *) crusher->udev, 0x00);
-		usb_close((usb_dev_handle	*) crusher->udev);
+//            usb_reset((usb_dev_handle  *) crusher->udev);
+//            usb_release_interface((usb_dev_handle  *) crusher->udev, 0x00);
+            usb_close((usb_dev_handle	*) crusher->udev);
 	}
 	crusher_free(crusher);
 }

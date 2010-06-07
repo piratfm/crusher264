@@ -77,7 +77,7 @@ int mg1264_hbrr(crusher_t *crusher, uint8_t address, uint16_t *data)
  * */
 int mg1264_hbrw(crusher_t *crusher, uint8_t address, uint16_t value)
 {
-	uint16_t val = me2le_16(value);
+	uint16_t val = value;
 	XTREME("Writing host-bus register 0x%02x.", address);
 	int ret = usb_control_msg((usb_dev_handle *) crusher->udev, USB_TYPE_VENDOR + USB_RECIP_DEVICE,
 								EP0_HBRW, val, address, NULL, 0x00, USB_TIMEOUT);
@@ -123,8 +123,8 @@ int mg1264_csrw(crusher_t *crusher, uint16_t address, uint32_t regval, uint8_t b
 int mg1264_csrr(crusher_t *crusher, uint16_t address, uint32_t *value, uint8_t blockid, uint8_t regWidth)
 {
 	int ret;
-	uint16_t addr = me2le_16(address);
-	uint16_t in_data = me2be_16(blockid << 8 | regWidth);
+	uint16_t addr = address;
+	uint16_t in_data = regWidth << 8 | blockid;
 	uint32_t val;
 
 	DUMP("Reading codec register 0x%02x.", address);
@@ -189,7 +189,7 @@ int mg1264_mbw (crusher_t *crusher, uint32_t address, uint32_t dataSize, uint8_t
 		if ( ret != sizeof(confpkt) ){
 			dump_bytes((char *) &confpkt, sizeof(confpkt));
 			ERROR("codec Memory Block write prepare FAILED!"
-								" (0x%02x bytes sended from 0x%02x).",
+								" (%d bytes sended from %d).",
 								ret, sizeof(confpkt));
 			goto mbw_fail;
 		}
@@ -202,12 +202,11 @@ int mg1264_mbw (crusher_t *crusher, uint32_t address, uint32_t dataSize, uint8_t
 				pktsize = to_write - sended_pkt_data;
 			}
 
-			/* write_extram((char *) data + sended_bytes + sended_pkt_data, pktsize ); */
 			ret = usb_bulk_write((usb_dev_handle *) crusher->udev, EP2, (void *) data + sended_bytes + sended_pkt_data,
 							pktsize, BULK_TOUT);
 			if ( ret != pktsize ){
 					ERROR("codec Memory Block write FAILED!"
-										" (0x%02x bytes sended from 0x%02x).",
+										" (%d bytes sended from %d).",
 										ret, pktsize);
 					dump_bytes((char *) data + sended_bytes + sended_pkt_data, pktsize);
 					goto mbw_fail;
@@ -264,7 +263,7 @@ int mg1264_mbr (crusher_t *crusher, uint32_t address, uint32_t dataSize, uint8_t
 		if ( ret != sizeof(confpkt) ){
 			dump_bytes((char *) &confpkt, sizeof(confpkt));
 			ERROR("codec Memory Block read prepare FAILED!"
-								" (0x%02x bytes sended from 0x%02x).",
+								" (%d bytes sended from %d).",
 								ret, sizeof(confpkt));
 			goto mbr_fail;
 		}
@@ -277,13 +276,12 @@ int mg1264_mbr (crusher_t *crusher, uint32_t address, uint32_t dataSize, uint8_t
 				pktsize = to_read - readed_pkt_data;
 			}
 
-			/*read_extram((char *)data + readed_bytes + readed_pkt_data, pktsize);*/
 			ret = usb_bulk_read((usb_dev_handle *) crusher->udev, EP6 + USB_ENDPOINT_IN,
 								(void *) data + readed_bytes + readed_pkt_data, pktsize, BULK_TOUT);
-			if ( ret != pktsize ){
+			if ( ret != 0 && ret != pktsize ){
 				dump_bytes( (char *)data + readed_bytes + readed_pkt_data, pktsize);
 				ERROR("codec Memory Block read FAILED!"
-						" (0x%02x bytes readed from 0x%02x).", ret, pktsize);
+						" (%d bytes readed from %d).", ret, pktsize);
 				goto mbr_fail;
 			}
 
@@ -317,7 +315,7 @@ int mg1264_cmd (crusher_t *crusher, command_t *cmd_in)
 
 	ret = usb_bulk_write((usb_dev_handle *) crusher->udev, EP1, (void *) &cmd_out, pktsize, BULK_TOUT);
 	if ( ret != pktsize ){
-		ERROR("Cant send data (0x%02x bytes sended from 0x%02x.", ret, pktsize);
+		ERROR("Cant send data (%d bytes sended from %d).", ret, pktsize);
 		dump_bytes( (char *) &cmd_out, pktsize);
 		goto cmd_fail;
 	}
@@ -325,7 +323,7 @@ int mg1264_cmd (crusher_t *crusher, command_t *cmd_in)
 	ret = usb_bulk_read((usb_dev_handle *) crusher->udev, EP1 + USB_ENDPOINT_IN, (void *) &cmd_out + pktsize,
 						pktsize, BULK_TOUT);
 	if ( ret != pktsize ){
-		ERROR("Can't read data (0x%02x bytes sended from 0x%02x.", ret, pktsize);
+		ERROR("Can't read data (%d bytes sended from %d).", ret, pktsize);
 		dump_bytes( (char *) &cmd_out + pktsize, pktsize);
 		goto cmd_fail;
 	}
@@ -398,7 +396,7 @@ int mg1264_event (crusher_t *crusher, event_t *event_out)
 	ret = usb_bulk_read((usb_dev_handle *) crusher->udev, EP8 + USB_ENDPOINT_IN, (void *) &event_in,
 							sizeof(event_t), BULK_TOUT);
 	if ( ret != sizeof(event_t) ){
-		ERROR("codec event read FAILED (0x%02x bytes readed from 0x%02x).",
+		ERROR("codec event read FAILED (%d bytes readed from %d).",
 							ret, sizeof(event_t));
 		dump_bytes( (char *) &event_in, sizeof(event_t));
 		goto event_fail;
