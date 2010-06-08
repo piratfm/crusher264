@@ -9,7 +9,7 @@
  * _lack of deinterlacing?_
 
 
-In this mode USB-Device receiving compressed mpeg video over USB from host-pc, encode it, and send this data over USB to host-pc. 
+In this mode USB-Device receiving compressed mpeg video over USB from host-pc, encode it, and send this data over USB to host-pc. Compressed video, that sent to device - is in mpeg2-pes format with only I-frames (like DV). Every even-odd bytes are swapped. Also every frame aligned with padding stream (0xbe).
 
 = Images: =
 <img src=http://crusher264.googlecode.com/svn/wiki/crusherhdtop.jpg>
