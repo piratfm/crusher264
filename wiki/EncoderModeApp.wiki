@@ -2,7 +2,7 @@
 
 = Stand-Alone Applications =
 
-There is some applications at crusher264/sample directory, like crusher264, that able to work with encoder-sticks. It can send RAW-uncompressed video to device and receive RAW h264 stream.
+There is some applications at crusher264/sample directory, like crusher264, that able to work with encoder-sticks. It can send RAW-uncompressed YUV420p video to device and receive RAW h264 stream.
 
 First, RAW-file have to be created, for example with FFmpeg use this command:
 {{{
