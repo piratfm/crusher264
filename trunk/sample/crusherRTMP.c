@@ -92,9 +92,9 @@ static void rtmp_log(int level, const char *fmt, va_list args)
     case RTMP_LOGCRIT:    level = LOG_NULL;     break;
     case RTMP_LOGERROR:   level = LOG_ERROR;    break;
     case RTMP_LOGWARNING: level = LOG_WARNING;  break;
-    case RTMP_LOGINFO:    level = LOG_INFO;     break;
-    case RTMP_LOGDEBUG:   level = LOG_DEBUG;    break;
-    case RTMP_LOGDEBUG2:  level = LOG_XTREME;   break;
+//    case RTMP_LOGINFO:    level = LOG_INFO;     break;
+//    case RTMP_LOGDEBUG:   level = LOG_DEBUG;    break;
+//    case RTMP_LOGDEBUG2:  level = LOG_XTREME;   break;
     }
 
     logwrite2(level, fmt, args);
@@ -291,9 +291,9 @@ int main (int argc, char **argv)
     case LOG_NULL:    rc = RTMP_LOGCRIT;    break;
     case LOG_ERROR:   rc = RTMP_LOGERROR;   break;
     case LOG_WARNING: rc = RTMP_LOGWARNING; break;
-    case LOG_INFO:    rc = RTMP_LOGINFO;    break;
-    case LOG_DEBUG:   rc = RTMP_LOGDEBUG;   break;
-    case LOG_XTREME:  rc = RTMP_LOGDEBUG2;  break;
+//    case LOG_INFO:    rc = RTMP_LOGINFO;    break;
+//    case LOG_DEBUG:   rc = RTMP_LOGDEBUG;   break;
+//    case LOG_XTREME:  rc = RTMP_LOGDEBUG2;  break;
     }
 
     if (rtmp) {

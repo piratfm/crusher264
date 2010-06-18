@@ -74,7 +74,8 @@ int mg1264_load_firmware(crusher_t *crusher, FILE *mg1264Fw)
 	if(fread (tempregs, sizeof(uint32_t),1,mg1264Fw) != 1)
 		    	return 0;
 	version = be2me_32(tempregs[0]);
-	DEBUG("firmware version=%u", version);
+	DEBUG("firmware version: %u.%u.%u.%u",
+	        (version >> 24) & 0x0ff, (version >> 16) & 0x0ff, (version >> 8) & 0x0ff, version & 0x0ff);
 	// Continue in a loop processing each section as it is found.
 	// In order to handle corrupted images, the loop exits as
 	// soon as the current firmware image pointer goes past the
@@ -129,16 +130,31 @@ int mg1264_load_firmware(crusher_t *crusher, FILE *mg1264Fw)
 
 	            	csrAddr = be2me_32(tempregs[1]);
 	            	csrData =  be2me_32(tempregs[2]);
-	            	tempregs[3] = be2me_32(tempregs[0]);
-	            	csrSize = tempregs[3] >> 16;
-	            	csrBlock = tempregs[3] >> 8;
+	            	tempregs[0] = be2me_32(tempregs[0]);
+	            	int to_read = be2me_32(tempregs[3]);
+	            	csrSize = tempregs[0] >> 16;
+	            	csrBlock = tempregs[0] >> 8;
 
-	            	XTREME("CSR addr: 0x%08x, size: %d, block: 0x%x, value: 0x%04x",
-	            			csrAddr, csrSize, csrBlock, csrData);
 
-	                // write the register
-	            	if(!mg1264_csrw(crusher, csrAddr, csrData, csrBlock, csrSize))
-	            		return 0;
+	            	if (!to_read) {
+	            	    // write the register
+	                    XTREME("CSR write addr: 0x%08x, size: %d, block: 0x%x, value: 0x%08x",
+	                            csrAddr, csrSize, csrBlock, csrData);
+	            	    if(!mg1264_csrw(crusher, csrAddr, csrData, csrBlock, csrSize))
+	            	        return 0;
+	            	} else {
+                        XTREME("CSR read addr: 0x%08x, size: %d, block: 0x%x, query:  0x%08x",
+                                                    csrAddr, csrSize, csrBlock, to_read);
+                        if(!mg1264_csrr(crusher, csrAddr, &csrData, csrBlock, csrSize))
+                            return 0;
+                        XTREME("CSR read addr: value: 0x%08x", csrData);
+	            	}
+
+
+	            	/* !!! recheck csr:
+	            	 *  addr: 0x0014, value: 0x01dd6164 blockid:0x08, size:0x04
+	            	 *  addr: 0x0060, value: 0x00000005 blockid:0x11, size:0x01
+	            	 *   */
 	            }
 	            break;
 	        case MGFW_BSS_SECTION:
@@ -211,15 +227,30 @@ int mg1264_load_firmware(crusher_t *crusher, FILE *mg1264Fw)
 	        				(i+3)<numRegisters?int_data[i+3]:-1);
 	        	}
 
-	        	if (crusher->devtype == DEV_TYPE_CAPTURE) {
-                    int_data[0] = me2be_32(0x041e);      ///< sysclk1/100000;
-                    int_data[11] = me2be_32(0x0649534e); ///< sysclk1
-                    int_data[16] = me2be_32(0xffffffff); ///< reserved for app.
-	        	} else {
-	                int_data[0] = me2be_32(0x0444);      ///< sysclk1/100000;
-	                int_data[8] = me2be_32(3);           ///< debug
-	                int_data[11] = me2be_32(0xd0058306); ///< sysclk1
-	                int_data[16] = me2be_32(0xffffffff); ///< reserved for app.
+	        	uint8_t reg_partition = 0x40;
+	        	switch (crusher->devtype) {
+	        	    case DEV_TYPE_CAPTURE:
+	                    int_data[0] = me2be_32(0x041e);      ///< sysclk1/100000;
+	                    int_data[11] = me2be_32(0x0649534e); ///< sysclk1
+	                    int_data[16] = me2be_32(0xffffffff); ///< reserved for app.
+	                    break;
+	        	    case DEV_TYPE_ENCODER:
+	                    int_data[0] = me2be_32(0x0444);      ///< sysclk1/100000;
+	                    int_data[8] = me2be_32(3);           ///< debug
+	                    int_data[11] = me2be_32(0xd0058306); ///< sysclk1
+	                    int_data[16] = me2be_32(0xffffffff); ///< reserved for app.
+                        break;
+                    case DEV_TYPE_ENCODER_HD:
+                        int_data[0] = me2be_32(0x0000032a);      ///< sysclk1/100000;
+                        int_data[4] = me2be_32(0x00000000);
+                        int_data[11] = me2be_32(0x202fbf00);
+                        int_data[12] = me2be_32(0x0aba9500);
+                        int_data[13] = me2be_32(0x02dc6c00);
+                        int_data[14] = me2be_32(0x00000000);
+                        reg_partition = 0x7d;
+                        break;
+                    default:
+                        ERROR("unknown device type in MGFW_MWCONFIG_SECTION %d",crusher->devtype);
 	        	}
 
 	        	if(!mg1264_mbw(crusher, dramAddr, dramSize, temp, dramPartition)){
@@ -259,38 +290,41 @@ int mg1264_load_firmware(crusher_t *crusher, FILE *mg1264Fw)
 	        	tempregs[1] = 0;
 	        	tempregs[2] = 0xffffffff;
 
-	        	if( !mg1264_mbw(crusher, 0x00000ffc, 0x04, (uint8_t *) tempregs, 0x40) )
+	        	if( !mg1264_mbw(crusher, 0x00000ffc, 0x04, (uint8_t *) tempregs, reg_partition) )
 	        		return 0;
-	        	if( !mg1264_mbw(crusher, 0x00000ff8, 0x04, (uint8_t *) tempregs+1, 0x40) )
-	        		return 0;
-	        	if( !mg1264_mbw(crusher, crusher->gpb + 0x18 /*0xc5198*/,
-													 0x04, (uint8_t *) tempregs+2, 0x40) )
-					return 0;
-
-	        	int_data = calloc(MWARE_SIZE, sizeof(uint32_t));
-	        	if(!int_data)
+	        	if( !mg1264_mbw(crusher, 0x00000ff8, 0x04, (uint8_t *) tempregs+1, reg_partition) )
 	        		return 0;
 
-	        	for (i=0; i < MWARE_SIZE; i+=4){
-	        		XTREME("%u, %u, %u, %u,",
-	        				crusher->mware_data[i],
-	        				(i+1)<MWARE_SIZE?crusher->mware_data[i+1]:-1,
-	        		        (i+2)<MWARE_SIZE?crusher->mware_data[i+2]:-1,
-	        		        (i+3)<MWARE_SIZE?crusher->mware_data[i+3]:-1);
-	        	}
+	        	if (crusher->devtype != DEV_TYPE_ENCODER_HD) {
+                    if( !mg1264_mbw(crusher, crusher->gpb + 0x18 /*0xc5198*/,
+                                                         0x04, (uint8_t *) tempregs+2, reg_partition) )
+                        return 0;
+
+                    int_data = calloc(MWARE_SIZE, sizeof(uint32_t));
+                    if(!int_data)
+                        return 0;
+
+                    for (i=0; i < MWARE_SIZE; i+=4){
+                        XTREME("%u, %u, %u, %u,",
+                                crusher->mware_data[i],
+                                (i+1)<MWARE_SIZE?crusher->mware_data[i+1]:-1,
+                                (i+2)<MWARE_SIZE?crusher->mware_data[i+2]:-1,
+                                (i+3)<MWARE_SIZE?crusher->mware_data[i+3]:-1);
+                    }
 
 
-				/* convert vgaconfig to big-endian */
-	        	for (i=0; i<MWARE_SIZE; i++)
-	        		int_data[i] = me2be_32(crusher->mware_data[i]);
+                    /* convert vgaconfig to big-endian */
+                    for (i=0; i<MWARE_SIZE; i++)
+                        int_data[i] = me2be_32(crusher->mware_data[i]);
 
-	        	if( !mg1264_mbw(crusher, 0x00000000, MWARE_SIZE*sizeof(uint32_t),
-																	(uint8_t *) int_data, 0x4F) ){
-	        		free(int_data);
-	        		return 0;
-	        	}
+                    if( !mg1264_mbw(crusher, 0x00000000, MWARE_SIZE*sizeof(uint32_t),
+                                                                        (uint8_t *) int_data, 0x4F) ){
+                        free(int_data);
+                        return 0;
+                    }
 
-	        	free(int_data);
+                    free(int_data);
+                }
 
 	        	break;
 
@@ -299,11 +333,13 @@ int mg1264_load_firmware(crusher_t *crusher, FILE *mg1264Fw)
 	        	break;
 	      }
 
-	    mg1264_csrr(crusher, 0x00C2, &status, 0x04, 0x02);
-	    if (sectionId != MGFW_GPB_SECTION && status != 0x40) {
-	    	XTREME("status=%d (must be 0x40)", status);
-	    	return 0;
-	    }
+	      if (crusher->devtype != DEV_TYPE_ENCODER_HD) {
+            mg1264_csrr(crusher, 0x00C2, &status, 0x04, 0x02);
+            if (sectionId != MGFW_GPB_SECTION && status != 0x40) {
+                XTREME("status=%u (must be 0x40)", status);
+                return 0;
+            }
+	      }
 	  }
 
 	  return 1;

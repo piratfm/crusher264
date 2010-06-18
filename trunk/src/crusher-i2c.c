@@ -96,29 +96,24 @@ static struct i2c_data adv7180_init[adv7180_init_size] = {
 static struct i2c_data adv7180_input[3][adv7180_init_size] = {
         {/* composite */
                 { 0x0f, 0x00 },
-                { 0x00, 0x80 },
+                { 0x00, 0x00 }, /* 0x50=ntsc, 0x80=pal */
                 { 0x58, 0x00 },
                 { 0x17, 0x41 },
                 { 0x4d, 0xef },
         }, {/* s-video */
                 { 0x0f, 0x00 },
-                { 0x00, 0x86 },
+                { 0x00, 0x06 }, /* 0x56=ntsc, 0x86=pal */
                 { 0x58, 0x04 },
                 { 0x17, 0x01 },
                 { 0x4d, 0xef },
         }, { /* component */
                 { 0x0f, 0x00 },
-                { 0x00, 0x89 },
+                { 0x00, 0x09 }, /* 0x59=ntsc, 0x89=pal */
                 { 0x58, 0x00 },
                 { 0x17, 0xe1 },
                 { 0x4d, 0xee },
         },
 };
-
-
-
-
-
 
 
 #define cs4265_init_size 2
@@ -163,17 +158,25 @@ int i2c_init(crusher_t *crusher)
     int i;
 
     for (i=0; i < cy22394_init_size; i++)
-        i2c_write(crusher, I2C_ADDR_CY22394, 0xff, cy22394_init[i].reg, cy22394_init[i].val);
+        if(!i2c_write(crusher, I2C_ADDR_CY22394, 0xff, cy22394_init[i].reg, cy22394_init[i].val)) return 0;
 
     for (i=0; i < adv7180_init_size; i++)
-        i2c_write(crusher, I2C_ADDR_ADV7180, 0x00, adv7180_init[i].reg, adv7180_init[i].val);
+        if(!i2c_write(crusher, I2C_ADDR_ADV7180, 0x00, adv7180_init[i].reg, adv7180_init[i].val)) return 0;
 
-    for (i=0; i < adv7180_input_size; i++)
-        i2c_write(crusher, I2C_ADDR_ADV7180, 0x00,
-                adv7180_input[crusher->video_input][i].reg, adv7180_input[crusher->video_input][i].val);
+    for (i=0; i < adv7180_input_size; i++) {
+        /* value for reg 0x00 must be |0x80 for pal,  |0x50 for ntsc */
+        if(adv7180_input[crusher->video_input][i].reg == 0x00) {
+            if(crusher->framerate_den == 3003)
+                adv7180_input[crusher->video_input][i].val |= 0x50;
+            else
+                adv7180_input[crusher->video_input][i].val |= 0x80;
+        }
+        if(!i2c_write(crusher, I2C_ADDR_ADV7180, 0x00,
+                adv7180_input[crusher->video_input][i].reg, adv7180_input[crusher->video_input][i].val)) return 0;
+    }
 
     for (i=0; i < cs4265_init_size; i++)
-        i2c_write(crusher, I2C_ADDR_CS4265, 0xff, cs4265_init[i].reg, cs4265_init[i].val);
+        if(!i2c_write(crusher, I2C_ADDR_CS4265, 0xff, cs4265_init[i].reg, cs4265_init[i].val)) return 0;
 
     return 1;
 }
@@ -190,19 +193,19 @@ int i2c_init2(crusher_t *crusher)
     }
 
     /* brightness/contrast/saturation */
-    i2c_write(crusher, I2C_ADDR_ADV7180, 0x00, 0x0a, crusher->video_brightness);
-    i2c_write(crusher, I2C_ADDR_ADV7180, 0x00, 0x08, crusher->video_contrast);
-    i2c_write(crusher, I2C_ADDR_ADV7180, 0x00, 0xffe3, crusher->video_saturation_Cb);
-    i2c_write(crusher, I2C_ADDR_ADV7180, 0x00, 0xffe4, crusher->video_saturation_Cr);
+    if(!i2c_write(crusher, I2C_ADDR_ADV7180, 0x00, 0x0a, crusher->video_brightness)) return 0;
+    if(!i2c_write(crusher, I2C_ADDR_ADV7180, 0x00, 0x08, crusher->video_contrast)) return 0;
+    if(!i2c_write(crusher, I2C_ADDR_ADV7180, 0x00, 0xffe3, crusher->video_saturation_Cb)) return 0;
+    if(!i2c_write(crusher, I2C_ADDR_ADV7180, 0x00, 0xffe4, crusher->video_saturation_Cr)) return 0;
 
     /* set volume gain */
-    i2c_write(crusher, I2C_ADDR_CS4265, 0xff, 0x07, gain);
-    i2c_write(crusher, I2C_ADDR_CS4265, 0xff, 0x08, gain);
+    if(!i2c_write(crusher, I2C_ADDR_CS4265, 0xff, 0x07, gain)) return 0;
+    if(!i2c_write(crusher, I2C_ADDR_CS4265, 0xff, 0x08, gain)) return 0;
 
     if(crusher->audio_samplerate == 24000){
 #if 0
         /* mclk/2 */
-        i2c_write(crusher, I2C_ADDR_CS4265, 0xff, 0x05, 0x40);
+        if(!i2c_write(crusher, I2C_ADDR_CS4265, 0xff, 0x05, 0x40)) return 0;
 #endif
     }
 

@@ -12,8 +12,11 @@
 #include "mg1264.h"
 #include "crusher.h"
 
+/* Request 0xb1 reset (hd-only) */
+int mg1264_reset_b1(crusher_t *crusher, uint16_t reg);
+
 /* Request 0xbb reset */
-int mg1264_adc_reset(crusher_t *crusher);
+int mg1264_reset_bb(crusher_t *crusher, uint16_t reg);
 
 /* Request 0xbc reset */
 int mg1264_reset(crusher_t *crusher);

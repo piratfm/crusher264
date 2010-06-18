@@ -5,8 +5,10 @@
 #include <stdint.h>
 
 #define FX2_Firmware "firmware/FX2Firmware.hex"
+#define FX2_HDFirmware "firmware/hd.FX2Firmware.hex"
 #define FX2_CaptureFirmware "firmware/VideoRecorder.hex"
 #define MG1264_Firmware "firmware/qmmapp.seve1-eb-16mb.bin"
+#define MG3500_HDFirmware "firmware/qmmapp.mg3500-2ddr2_264MHz_from48_128MB-codec.bin"
 #define MG1264_CaptureFirmware "firmware/cap.qmmapp.seve1-eb-16mb.bin"
 
 #define MAX_H264_FRAMESIZE 131072
@@ -34,6 +36,7 @@ enum {
     DEV_TYPE_AUTO,
     DEV_TYPE_ENCODER,
     DEV_TYPE_CAPTURE,
+    DEV_TYPE_ENCODER_HD,
 };
 
 enum {
@@ -130,6 +133,8 @@ typedef struct {
 	StreamBlock_t out_data[6];
 	int out_blocks;
     int finished;
+
+    int status;
 } crusher_t;
 
 /**
@@ -184,9 +189,10 @@ void crusher_close(crusher_t *crusher);
  *        check USB-ID to confirm that fx2 firmware uploaded.
  * \param usb device
  * \param firmware file
+ * \param flag to send CPUCS FX2 flag (needed only for HD-variant of encoder)
  * \return status of uploading firmware.
  */
-int	crusher_fx2loader(void	*udev, FILE* fx2Fw);
+int	crusher_fx2loader(void	*udev, FILE* fx2Fw, int cpucs_send);
 
 
 /**

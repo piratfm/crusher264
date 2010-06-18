@@ -20,21 +20,36 @@
 #include "crusher-i2c.h"
 #include "bswap.h"
 
-
 /*
- * Request 0xbb reset ADC
+ * Request 0xb1 reset
  * */
-int mg1264_adc_reset(crusher_t *crusher)
+int mg1264_reset_b1(crusher_t *crusher, uint16_t reg)
 {
     int ret;
     XTREME("Reset ADC.");
 
     ret = usb_control_msg((usb_dev_handle *) crusher->udev, USB_TYPE_VENDOR + USB_RECIP_DEVICE,
-                    EP0_ADC_RESET, 0x0117, 0x0000, NULL, 0x0000, USB_TIMEOUT);
+            EP0_B1_RESET, reg, 0x0000, NULL, 0x0000, USB_TIMEOUT);
     if (ret != 0)
         ERROR("Reset ADC failed.");
 
     return ret;
+}
+
+/*
+ * Request 0xbb reset
+ * */
+int mg1264_reset_bb(crusher_t *crusher, uint16_t reg)
+{
+    int ret;
+    XTREME("Reset ADC.");
+
+    ret = usb_control_msg((usb_dev_handle *) crusher->udev, USB_TYPE_VENDOR + USB_RECIP_DEVICE,
+            EP0_BB_RESET, reg, 0x0000, NULL, 0x0000, USB_TIMEOUT);
+    if (ret != 0)
+        ERROR("Reset ADC failed.");
+
+    return (ret == 0);
 }
 
 
@@ -51,7 +66,7 @@ int mg1264_reset(crusher_t *crusher)
     if (ret != 0)
         ERROR("Reset MG1264 failed.");
 
-    return ret;
+    return (ret == 0);
 }
 
 /*
@@ -83,7 +98,7 @@ int mg1264_hbrw(crusher_t *crusher, uint8_t address, uint16_t value)
 								EP0_HBRW, val, address, NULL, 0x00, USB_TIMEOUT);
 	if ( ret != 0 )
 		ERROR("Cant write host-bus register 0x%02x.", address);
-	return ret;
+	return (ret == 0);
 }
 
 
@@ -105,7 +120,6 @@ int mg1264_csrw(crusher_t *crusher, uint16_t address, uint32_t regval, uint8_t b
 	data.blockid = blockid;
 	data.regWidth = regWidth;
 
-	DUMP("Writing codec register 0x%04x.", sizeof(data));
 	int ret = usb_control_msg((usb_dev_handle *) crusher->udev, USB_TYPE_VENDOR + USB_RECIP_DEVICE, EP0_CSRW,
 							0x00, 0x00, (void *) &data, sizeof(data), USB_TIMEOUT);
 	if ( ret != sizeof(data) ) {
@@ -113,7 +127,7 @@ int mg1264_csrw(crusher_t *crusher, uint16_t address, uint32_t regval, uint8_t b
 		dump_bytes((char *) &data, ret);
 		return 0;
 	}
-	return 1;
+	return ret;
 }
 
 
@@ -136,7 +150,7 @@ int mg1264_csrr(crusher_t *crusher, uint16_t address, uint32_t *value, uint8_t b
 		return 0;
 	}
 	*value = be2me_32(val);
-	return 1;
+	return ret;
 }
 
 
@@ -220,7 +234,6 @@ int mg1264_mbw (crusher_t *crusher, uint32_t address, uint32_t dataSize, uint8_t
 	return 1;
 
 mbw_fail:
-	usb_reset((usb_dev_handle  *) crusher->udev);
 	return 0;
 }
 
@@ -292,7 +305,6 @@ int mg1264_mbr (crusher_t *crusher, uint32_t address, uint32_t dataSize, uint8_t
 	return readed_bytes;
 
 mbr_fail:
-    usb_reset((usb_dev_handle  *) crusher->udev);
 	return 0;
 }
 
@@ -331,10 +343,10 @@ int mg1264_cmd (crusher_t *crusher, command_t *cmd_in)
 	cmd_in->returnCode = be2me_32(cmd_out.returnCode);
 	for (i=0; i<7; i++)
 		cmd_in->returnValues[i] = be2me_32(cmd_out.returnValues[i]);
-	return cmd_in->returnCode;
+//	return cmd_in->returnCode;
+	return 1;
 
 cmd_fail:
-    usb_reset((usb_dev_handle  *) crusher->udev);
 	return 0;
 }
 /*
@@ -422,6 +434,5 @@ int mg1264_event (crusher_t *crusher, event_t *event_out)
 	return 1;
 
 event_fail:
-	usb_reset((usb_dev_handle  *) crusher->udev);
 	return 0;
 }

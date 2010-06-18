@@ -592,7 +592,7 @@ int encoderRestart(crusher_t *crusher)
 	command_t cmd;
 	memset(&cmd, 0, sizeof(command_t));
 	 /* 3, 1026, 56, 6, 68, 1, 0, 0 */
-	RawCmd(crusher, AVENCODER_CTRLOBJ_ID, CMD_OPCODE_CONFIGURE, 0x38, 6, 0x44, 1, 0, 0);
+	if(!RawCmd(crusher, AVENCODER_CTRLOBJ_ID, CMD_OPCODE_CONFIGURE, 0x38, 6, 0x44, 1, 0, 0)) return 0;
 
 	/* 3, 1024, 0x30003, 0x030013, 0, 1 */
 	/* 0000   00 00 00 03 00 00 04 00 00 03 00 03 00 03 00 13
@@ -602,7 +602,7 @@ int encoderRestart(crusher_t *crusher)
 	cmd.arguments[0] = AVE_EV_BITSTREAM_FLUSHED;
 	cmd.arguments[1] = AVE_EV_READY;
 	cmd.arguments[3] = 1;
-	mg1264_cmd(crusher, &cmd);
+	if(!mg1264_cmd(crusher, &cmd)) return 0;
 	if (crusher->devmode == DEV_TYPE_ENCODER) {
 	    /* 1, 1024, 0x010002, 0 */
 	    /* 0000   00 00 00 01 00 00 04 00 00 01 00 02 00 00 00 00
@@ -611,13 +611,13 @@ int encoderRestart(crusher_t *crusher)
 	    cmd.opcode = CMD_OPCODE_SUBSCRIBE_EVENT;
 	    cmd.arguments[0] = SYSTEM_EV_2;
 	    cmd.arguments[1] = 0;
-	    mg1264_cmd(crusher, &cmd);
+	    if(!mg1264_cmd(crusher, &cmd)) return 0;
 
 	    /* 1, 1024, 0x010004, 0 */
 	    /* 0000   00 00 00 01 00 00 04 00 00 01 00 04 00 00 00 00
 	     * 0010   00 00 00 00 00 00 00 01 00 00 00 00 0b 9b 23 43*/
 	    cmd.arguments[0] = SYSTEM_EV_BAD_IMAGE_DIMENSION;
-	    mg1264_cmd(crusher, &cmd);
+	    if(!mg1264_cmd(crusher, &cmd)) return 0;
 	}
 	/* 3, 1024, 0x030001, 0 */
 	/* 0000   00 00 00 03 00 00 04 00 00 03 00 01 00 00 00 00
@@ -626,18 +626,16 @@ int encoderRestart(crusher_t *crusher)
 	cmd.controlObjectId = AVENCODER_CTRLOBJ_ID;
 	cmd.opcode = CMD_OPCODE_SUBSCRIBE_EVENT;
 	cmd.arguments[0] = AVE_EV_BITSTREAM_BLOCK_READY;
-	mg1264_cmd(crusher, &cmd);
+	if(!mg1264_cmd(crusher, &cmd)) return 0;
 
-	if(!mg1264_csrr(crusher, 0x00C2, &status, 0x04, 0x02))
-		return 0;
+	if(!mg1264_csrr(crusher, 0x00C2, &status, 0x04, 0x02)) return 0;
 	if (status != 0x40) {
 		ERROR("status=%d (must be 0x40)", status);
 		return 0;
 	}
 	XTREME("status=%d", status);
 
-
-	return status & 0x40;
+	return 1;
 };
 
 
@@ -645,7 +643,7 @@ int encoderRestart(crusher_t *crusher)
 /***********************************************************
  * prepare to configure codec
  ***********************************************************/
-int encoderCaptureStart(crusher_t *crusher)
+int encoderCaptureRestart(crusher_t *crusher)
 {
     command_t cmd;
     memset(&cmd, 0, sizeof(command_t));
@@ -655,7 +653,7 @@ int encoderCaptureStart(crusher_t *crusher)
     cmd.controlObjectId = SYSTEM_CTRLOBJ_ID;
     cmd.opcode = SYS_CMD_OPCODE_POWERDOWN;
     cmd.arguments[0] = 0x01;
-    mg1264_cmd(crusher, &cmd);
+    if(!mg1264_cmd(crusher, &cmd)) return 0;
 
 
     /* 0000   00 00 00 01 00 00 00 05 00 00 00 00 00 00 00 00
@@ -664,7 +662,7 @@ int encoderCaptureStart(crusher_t *crusher)
     cmd.controlObjectId = SYSTEM_CTRLOBJ_ID;
     cmd.opcode = SYS_CMD_OPCODE_POWERDOWN;
     cmd.arguments[0] = 0x00;
-    mg1264_cmd(crusher, &cmd);
+    if(!mg1264_cmd(crusher, &cmd)) return 0;
 
     /* 0000   00 00 00 03 00 00 04 02 00 00 00 38 00 00 00 06
      * 0010   00 00 00 44 00 00 00 01 00 00 00 00 00 00 00 00
@@ -920,7 +918,7 @@ int mg1264_send_capture_textconfig(crusher_t *crusher)
 {
     /* 3, 1026, 10 */
     if(crusher->bitrate_mode == BITRATE_MODE_AUTO) {
-        if (crusher->bitrate >= 2000000)
+        if (crusher->bitrate >= 3000000)
             encoderConfigure(crusher, AVE_CFG_VENC_OPERATIONAL_MODE, AVE_CFG_VENC_OPERATIONAL_MODE_HIGH_BITRATE);
         else if (crusher->bitrate >= 750000)
             encoderConfigure(crusher, AVE_CFG_VENC_OPERATIONAL_MODE, AVE_CFG_VENC_OPERATIONAL_MODE_MED_BITRATE);
@@ -1008,7 +1006,8 @@ int mg1264_send_capture_textconfig(crusher_t *crusher)
      * if 2 - then AVE_CFG_VIDEO_CAPTURE_RECT_H/2
      * if crusher->height, then crusher->height*/
     //encoderConfigureVideo(crusher, AVE_CFG_VIDEO_IN_DECIMATION_Y, crusher->height);
-    if (crusher->height == 288 || crusher->height >= 480) {
+    if( (crusher->framerate_den == 3003 && crusher->height == 240) ||
+        (crusher->framerate_den == 3600 && (crusher->height == 288 ||crusher->height == 576 )) ) {
         encoderConfigureVideo(crusher, AVE_CFG_VIDEO_IN_DECIMATION_Y, 2);
     } else {
         encoderConfigureVideo(crusher, AVE_CFG_VIDEO_IN_DECIMATION_Y, crusher->height);
@@ -1023,7 +1022,7 @@ int mg1264_send_capture_textconfig(crusher_t *crusher)
         encoderConfigure(crusher, AVE_CFG_BITSTREAM_TYPE, AVE_CFP_BITSTREAM_TYPE_ELEM_VIDEO);
     } else {
         ERROR("Unknown format: %d", crusher->out_format);
-        return -1;
+        return 0;
     }
     /* 3, 1026, 17, 1 */
     encoderConfigure(crusher, AVE_CFG_ENC_AV_SELECT, AVE_CFP_ENC_SELECT_AV);
@@ -1070,23 +1069,26 @@ int mg1264_send_capture_textconfig(crusher_t *crusher)
     /* 3, 20 */
     ActivateVideoRCCfg(crusher);
 
-    /* 3, 19, 36, 0 */
-    encoderConfigureRCFile(crusher, 36, 0);
-    /* 3, 20 */
-    ActivateVideoRCCfg(crusher);
-    /* this 2 cmds used adaptive framerate? (does not exists for youtube profile) */
-    /* 3, 19, 29, 1 */
-    //encoderConfigureRCFile(crusher, AVE_CFG_RC_ADAPTIVE_FR_MIN_QP, 1);
-    /* 3, 20 */
-    //ActivateVideoRCCfg(crusher);
 
-    /* 3, 1026, 67, 2 */
+    if( (crusher->framerate_den == 3003 && crusher->height == 240) ||
+        (crusher->framerate_den == 3600 && (crusher->height == 288 || crusher->height == 576)) ) {
+        /* 3, 19, 36, 0 */
+        encoderConfigureRCFile(crusher, 36, 0);
+        /* 3, 20 */
+        ActivateVideoRCCfg(crusher);
+        /* this 2 cmds used adaptive framerate? (does not exists for youtube profile) */
+        /* 3, 19, 29, 1 */
+        encoderConfigureRCFile(crusher, AVE_CFG_RC_ADAPTIVE_FR_MIN_QP, 1);
+        /* 3, 20 */
+        ActivateVideoRCCfg(crusher);
+    }
 
     if(!crusher->audio_codec) {
         ERROR("audio codec not set");
         return 1;
     }
 
+    /* 3, 1026, 67, 2 */
     encoderConfigure(crusher, AVE_CFG_AENC_CODEC, crusher->audio_codec);
 
     /* TODO: support other samplerates */
@@ -1113,4 +1115,8 @@ int mg1264_send_capture_textconfig(crusher_t *crusher)
 
 
 
+int mg3500_send_hdencoder_textconfig(crusher_t *crusher)
+{
 
+    return 1;
+}

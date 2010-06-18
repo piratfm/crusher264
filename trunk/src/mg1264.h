@@ -115,6 +115,20 @@ enum {
 };
 
 
+
+enum {
+    HD_AVE_CMD_CONFIGURE            = 4,
+};
+
+enum {
+    HD_AVE_CMD_CONFIGURE_WIDTH      = 1,
+    HD_AVE_CMD_CONFIGURE_HEIGHT     = 2,
+
+};
+
+
+
+
 /*
  *
  *
@@ -476,6 +490,7 @@ int encoderConfigureRCFile(crusher_t *crusher, int param, int value);
 
 int videoRectDisp(crusher_t *crusher, int width, int height, int offset_x, int offset_y);
 int encoderRestart(crusher_t *crusher);
+int encoderCaptureRestart(crusher_t *crusher);
 int RawCmd(crusher_t *crusher, int controlObjectId, int opcode,
 					int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
 
