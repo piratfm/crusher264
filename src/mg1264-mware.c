@@ -321,6 +321,7 @@ int mware_tune_config(crusher_t *crusher){
 
 
 
+    /* have file config? */
     if(crusher->mwarecfg) {
         mware_h = fopen(crusher->mwarecfg, "r");
         if(!mware_h) {
@@ -357,6 +358,7 @@ int mware_tune_config(crusher_t *crusher){
         for (i=0; i<MWARE_SIZE; i++)
                 crusher->mware_data[i] = le2me_32(temp32[i]);
     } else {
+        /* generate config */
 
         if (crusher->devmode == DEV_TYPE_ENCODER) {
             /* use default mware */
@@ -413,7 +415,7 @@ qvgaconfig_16mb.bin         vgaconfig_16mb.bin      captured_d1.bin     arbiconf
                 else
                     crusher->mware_data[MWARE_VIDEO_VPU_PHYSICAL_OUTPUT_HEIGHT+4] = crusher->height + 20;
             }
-        } else {
+        } else if (crusher->devmode == DEV_TYPE_CAPTURE) {
             //TODO: configure mware for CrusherCapture if needed.
             if(crusher->audio_samplerate != 48000) {
 #if 0
@@ -437,15 +439,25 @@ qvgaconfig_16mb.bin         vgaconfig_16mb.bin      captured_d1.bin     arbiconf
 }
 
 
-void mware_defaults(crusher_t *crusher){
+int mware_defaults(crusher_t *crusher){
     int i;
 
-    if(crusher->devtype == DEV_TYPE_CAPTURE && crusher->devmode == DEV_TYPE_CAPTURE) {
-        for (i=0; i<MWARE_SIZE; i++)
-            crusher->mware_data[i] = capture_init_mware[i];
-    } else {
-        for (i=0; i<MWARE_SIZE; i++)
-            crusher->mware_data[i] = encoder_init_mware[i];
+    switch(crusher->devtype){
+        case DEV_TYPE_ENCODER:
+            for (i=0; i<MWARE_SIZE; i++)
+                crusher->mware_data[i] = encoder_init_mware[i];
+            break;
+        case DEV_TYPE_CAPTURE:
+            for (i=0; i<MWARE_SIZE; i++)
+                crusher->mware_data[i] = capture_init_mware[i];
+            break;
+        case DEV_TYPE_ENCODER_HD:
+            crusher->mware_data = NULL;
+            break;
+        default:
+            ERROR("Strange device type in mware conf: %d.", crusher->devtype);
+            return 0;
     }
+    return 1;
 }
 

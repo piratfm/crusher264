@@ -26,7 +26,7 @@ void usage(char *name)
   	   "This is \"Crusher\" reference design platform control application (%s)"
   	   ".\n"
 	   "Usage: %s [options] [output-file]\n"
-       "-m, --mode       : Input mode: encoder, capture (default=based on usb id)\n"
+       "-m, --mode       : Input mode: encoder, encoderhd, capture (default=based on usb id)\n"
        "\n"
 	   "-s, --size       : Image size of input file (default: 640x480)\n"
 	   "-b, --bitrate    : Specify output bitrate (default 1500Kbps)\n"
@@ -34,8 +34,11 @@ void usage(char *name)
        "-f, --format     : Otput file format: qbox, es (default: es for encoder, qbox for capture)\n"
 	   "-n, --num        : Specify device number in USB bus [default=auto]\n"
        "\n"
-       "Encoder-specific options:\n"
+       "Encoder specific options:\n"
        "-i, --input      : Specify input YUV420p file location [default=STDIN]\n"
+       "\n"
+       "HD Encoder specific options:\n"
+       "-i, --input      : Specify input mpeg file location [default=STDIN]\n"
        "\n"
        "Capture-specific options:\n"
        "-i, --input      : Number (or name) of input (0-composite, 1-s-video, 2-component) (default: 0-composite)\n"
@@ -134,6 +137,8 @@ int main (int argc, char **argv)
                     crusher.devmode = DEV_TYPE_ENCODER;
                 } else if(strcmp(optarg,"capture")==0) {
                     crusher.devmode = DEV_TYPE_CAPTURE;
+                } else if(strcmp(optarg,"encoderhd")==0) {
+                    crusher.devmode = DEV_TYPE_ENCODER_HD;
                 } else {
                     usage (argv[0]);
                     exit(-1);
@@ -197,6 +202,12 @@ int main (int argc, char **argv)
                 break;
         }
 	}
+
+    if (optind+1 <= argc)
+        outfile = argv[optind];
+
+    if(outfile==NULL)
+        fail(LOG_ERROR, "Specify output file!");
 
 	char *size_h;
 	char *pch;
@@ -335,6 +346,25 @@ int main (int argc, char **argv)
             }
         }
 
+    } else if (crusher.devmode == DEV_TYPE_ENCODER) {
+        crusher.out_format = format;
+        framesize = 128*1024;
+        logwrite(LOG_INFO, "You have HD-encoder device");
+        if (strcmp(infile, "-") != 0){
+            infh = fopen(infile, "r");
+        } else {
+            infh = stdin;
+        }
+        if(!infh){
+            logwrite(LOG_ERROR, "OPENING INPUT FILE FAILED");
+            exit(0);
+        }
+
+        /* initialize converter */
+        inbuff = malloc(framesize);
+
+        /* need to know frame length to allocate inner buffer */
+        crusher.inputFrameLen = framesize;
     } else {
         logwrite(LOG_INFO, "You have unknown device");
     }

@@ -161,7 +161,7 @@ typedef enum
 
 #define MWARE_SIZE 88 /* x 4bytes */
 
-void mware_defaults(crusher_t *crusher);
+int mware_defaults(crusher_t *crusher);
 int mware_tune_config(crusher_t *crusher);
 
 
