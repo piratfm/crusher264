@@ -22,8 +22,8 @@
 #endif
 
 
-//#undef EXTRA_DEBUG
-#define EXTRA_DEBUG
+#undef EXTRA_DEBUG
+//#define EXTRA_DEBUG
 
 
 /************************************************
@@ -274,6 +274,8 @@ int qbox2flv(qboxContext *qbox, flvContext *flv, uint8_t *buffer)
     int flags = 0;
     uint8_t *ptr = buffer;
 
+    assert(MAX_H264_FRAMESIZE > qbox->qbox_size);
+
     if(!(qbox->sample_flags & (SAMPLE_FLAGS_CTS_PRESENT|SAMPLE_FLAGS_CONFIGURATION_INFO)))
         newts++;
 
@@ -282,10 +284,17 @@ int qbox2flv(qboxContext *qbox, flvContext *flv, uint8_t *buffer)
     logwrite(LOG_DEBUG, "FLV: pts_in/90: %ld", newts);
 #endif
 
+    if(newts > flv->ts_last + 1000) {
+        newts = flv->ts_last+1;
+#ifdef EXTRA_DEBUG
+        logwrite(LOG_DEBUG, "FLV: too large difference (pts_out: %ld, flv->ts: %ld)", newts, flv->ts);
+#endif
+    }
+
     if(newts < flv->ts_last) {
         flv->ts += flv->ts_last;
 #ifdef EXTRA_DEBUG
-        logwrite(LOG_DEBUG, "FLV: pts_out: %ld, flv->ts: %ld", newts, flv->ts);
+        logwrite(LOG_DEBUG, "FLV: Update flv->ts (pts_out: %ld, flv->ts: %ld)", newts, flv->ts);
 #endif
     }
 
@@ -337,7 +346,8 @@ int qbox2flv(qboxContext *qbox, flvContext *flv, uint8_t *buffer)
             ptr+=size;
     }
 
-    put_buff(&ptr, qbox->data, qbox->qbox_size);
+    if(qbox->qbox_size)
+        put_buff(&ptr, qbox->data, qbox->qbox_size);
     put_be32(&ptr,size+flags_size+11); // previous tag size
 
 #ifdef EXTRA_DEBUG
