@@ -26,7 +26,7 @@
 #include "flvpkt.h"
 
 
-#define BUFFER_MAXSIZE 65536
+#define BUFFER_MAXSIZE (MAX_H264_FRAMESIZE+32)
 
 int Interrupted=0;
 
@@ -113,7 +113,7 @@ int main (int argc, char **argv)
     const char *input = NULL;
     char *rtmp_output = NULL;
     char *flv_output = NULL;
-    uint8_t buffer[65536];
+    uint8_t buffer[256000];
 
     int  width, height;
     qboxContext qbox;
