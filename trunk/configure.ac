@@ -176,6 +176,26 @@ PKG_CHECK_MODULES(RTMP, [librtmp >= v2.2c], [
 
 dnl ############## Arguments Checks
 
+AC_MSG_CHECKING([enabled RTP streamer])
+AC_ARG_WITH([rtpstreamer], [APR_HELP_STRING([--with-rtpstreamer], [enabled RTP streamer [[default=no]]])],
+[
+    if test "$with_rtpstreamer" != "yes"; then
+        AC_MSG_RESULT([no])
+    else
+        AC_MSG_RESULT([yes])
+    fi
+], [AC_MSG_RESULT([no])])
+
+if test "$with_rtpstreamer" == "yes"; then
+    AC_DEFINE([RTP_STREAMER], 1, [RTP streamer])
+    CRUSHER_RTP="crusherRTP"
+fi
+
+
+
+
+dnl ############## Arguments Checks
+
 AH_TEMPLATE([DBG], [Define as 1 if debugging needed])
 AC_MSG_CHECKING(whether to enable debugging)
 AC_ARG_WITH([debug], [APR_HELP_STRING([--with-debug[[=level]]], [Enable debugging level=0..3 (default: 1)])
@@ -291,6 +311,8 @@ AC_SUBST(USB_LIBS)
 AC_SUBST(CRUSHER_RTMP)
 AC_SUBST(RTMP_CFLAGS)
 AC_SUBST(RTMP_LIBS)
+
+AC_SUBST(CRUSHER_RTP)
 
 dnl ############## Final Output
 CFLAGS="$CFLAGS -Wall"
