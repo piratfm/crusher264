@@ -270,7 +270,7 @@ dev_search:
 
                         switch(crusher->devtype) {
                             case DEV_TYPE_ENCODER:
-                                crusher->mg1264fw = MG1264_Firmware;
+                                crusher->mg1264fw = MG1264Firmware;
                                 crusher->framerate_num = 2500;
                                 crusher->framerate_den = 100;
                                 break;
@@ -297,7 +297,7 @@ dev_search:
 
 						    switch(devices[dev_type_id].devType) {
 						        case DEV_TYPE_ENCODER:
-						            crusher->fx2fw = FX2_Firmware;
+						            crusher->fx2fw = FX2Firmware;
 						            break;
                                 case DEV_TYPE_CAPTURE:
                                     crusher->fx2fw = FX2_CaptureFirmware;

@@ -242,8 +242,10 @@ case "$host_cpu" in
         AC_DEFINE(HAVE_BSWAP)
         ;;
     armv5*e*|arm[79]*e*|arm9[24]6*|arm96*|arm102[26])
-        CRUSHER264_CFLAGS+="-mv=5e"
-        AC_DEFINE(ARCH_ARM)
+        #CRUSHER264_CFLAGS+="-mv=5e"
+	#For some reason this breaks ffmpeg 0.6.1 on the Dockstar
+	CRUSHER264_CFLAGS+=""        
+	AC_DEFINE(ARCH_ARM)
         ;;
     armv4*|arm7*|arm9[24]*)
         CRUSHER264_CFLAGS+="-mv=4"

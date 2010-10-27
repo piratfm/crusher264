@@ -44,6 +44,7 @@ do
     --bindir) echo_bindir="yes" ;;
     --sbindir) echo_sbindir="yes" ;;
     --libexecdir) echo_libexecdir="yes" ;;
+    --datarootdir) echo_datarootdir="yes" ;;
     --datadir) echo_datadir="yes" ;;
     --sysconfdir) echo_sysconfdir="yes" ;;
     --sharedstatedir) echo_sharedstatedir="yes" ;;
@@ -79,6 +80,9 @@ if test -z "$sbindir" ; then
 fi
 if test -z "$libexecdir" ; then
   libexecdir="@libexecdir@"
+fi
+if test -z "$datarootdir" ; then
+  datarootdir="@datarootdir@"
 fi
 if test -z "$datadir" ; then
   datadir="@datadir@"
@@ -160,6 +164,9 @@ fi
 if test x$echo_libexecdir = xyes ; then
   o=" $libexecdir"
 fi
+if test x$echo_datarootdir = xyes ; then
+  o=" $datarootdir"
+fi
 if test x$echo_datadir = xyes ; then
   o=" $datadir"
 fi
@@ -189,6 +196,9 @@ if test x$echo_host = xyes ; then
 fi
 if test x$echo_build = xyes ; then
   o=" $build"
+fi
+if test x$echo_pkgdatarootdir = xyes ; then
+  o=" ${datarootdir}/${package}"
 fi
 if test x$echo_pkgdatadir = xyes ; then
   o=" ${datadir}/${package}"
@@ -236,6 +246,7 @@ All available options:
   --bindir           \$bindir        $bindir
   --sbindir          \$sbindir       $sbindir
   --libexecdir       \$libexecdir    $libexecdir
+  --datarootdir      \$datarootdir   $datarootdir
   --datadir          \$datadir       $datadir
   --sysconfdir       \$sysconfdir    $sysconfdir
   --sharedstatedir   \$sharedstatedir$sharedstatedir
@@ -246,10 +257,11 @@ All available options:
   --target           \$target        $target
   --host             \$host          $host
   --build            \$build         $build
-  --pkgdatadir       \$datadir/\$package    ${datadir}/${package}
-  --pkglibdir        \$libdir/\$package     ${libdir}/${package}
-  --pkgincludedir    \$includedir/\$package ${includedir}/${package}
-  --template-version \$template_version     $template_version
+  --pkgdatarootdir   \$datarootdir/\$package ${datarootdir}/${package}
+  --pkgdatadir       \$datadir/\$package     ${datadir}/${package}
+  --pkglibdir        \$libdir/\$package      ${libdir}/${package}
+  --pkgincludedir    \$includedir/\$package  ${includedir}/${package}
+  --template-version \$template_version      $template_version
   --help
 EOF
 fi
