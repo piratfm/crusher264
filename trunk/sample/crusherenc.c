@@ -23,35 +23,33 @@ int Interrupted=0;
 void usage(char *name)
 {
   fprintf (stderr, "%s is a program to control usb h.264 encoder.\n"
-  	   "This is \"Crusher\" reference design platform control application (%s)"
-  	   ".\n"
-	   "Usage: %s [options] [output-file]\n"
-       "-m, --mode       : Input mode: encoder, encoderhd, capture (default=based on usb id)\n"
-       "\n"
-	   "-s, --size       : Image size of input file (default: 640x480)\n"
-	   "-b, --bitrate    : Specify output bitrate (default 1500Kbps)\n"
-	   "-o, --outfile    : Specify output file location (alternative of [output-file])\n"
-       "-f, --format     : Otput file format: qbox, es (default: es for encoder, qbox for capture)\n"
-	   "-n, --num        : Specify device number in USB bus [default=auto]\n"
-       "\n"
-       "Encoder specific options:\n"
-       "-i, --input      : Specify input YUV420p file location [default=STDIN]\n"
-       "\n"
-       "HD Encoder specific options:\n"
-       "-i, --input      : Specify input mpeg file location [default=STDIN]\n"
-       "\n"
-       "Capture-specific options:\n"
-       "-i, --input      : Number (or name) of input (0-composite, 1-s-video, 2-component) (default: 0-composite)\n"
-       "-C, --acodec     : Specify audio codec (pcm,aac,mp2) (default: aac)\n"
-       "-a, --abitrate   : Specify audio output bitrate (no matter for pcm) (default: 128Kbps)\n"
-       "-r, --samplerate : Specify audio samplerate (default: 48000)\n"
-       "-c, --channels   : Specify audio channels (default: 2)\n"
-       "\n"
-       "-d, --debug      : More verbose\n"
-       "-q, --qiet       : Less verbose\n"
-       "-h, --help       : Show this help\n"
-
-       "\n", name, "$Rev: 126 $", name );
+        "This is \"Crusher\" reference design platform control application (%s).\n"
+        "Usage: %s [options] [output-file]\n"
+        "-m, --mode       : Input mode: encoder, encoderhd, capture (default=based on usb id)\n"
+        "\n"
+        "-s, --size       : Image size of input file (default: 640x480)\n"
+        "-b, --bitrate    : Specify output bitrate (default 1500Kbps)\n"
+        "-o, --outfile    : Specify output file location (alternative of [output-file])\n"
+        "-f, --format     : Otput file format: qbox, es (default: es for encoder, qbox for capture)\n"
+        "-n, --num        : Specify device number in USB bus [default=auto]\n"
+        "\n"
+        "Encoder specific options:\n"
+        "-i, --input      : Specify input YUV420p file location [default=STDIN]\n"
+        "\n"
+        "HD Encoder specific options:\n"
+        "-i, --input      : Specify input mpeg file location [default=STDIN]\n"
+        "\n"
+        "Capture-specific options:\n"
+        "-i, --input      : Number (or name) of input (0-composite, 1-s-video, 2-component) (default: 0-composite)\n"
+        "-C, --acodec     : Specify audio codec (pcm,aac,mp2) (default: aac)\n"
+        "-a, --abitrate   : Specify audio output bitrate (no matter for pcm) (default: 128Kbps)\n"
+        "-c, --channels   : Specify audio channels (default: 2)\n"
+        "-g, --again      : Specify audio gain (default: 0), -120...120 (step: 5)\n"
+        "\n"
+        "-d, --debug      : More verbose\n"
+        "-q, --qiet       : Less verbose\n"
+        "-h, --help       : Show this help\n"
+        "\n", name, "$Rev: 126 $", name );
 }
 
 static void signal_handler(int signum)
@@ -97,7 +95,7 @@ int main (int argc, char **argv)
 	/******************************************************
 	 * Getopt
 	 ******************************************************/
-    const char short_options[] = "m:s:b:o:f:r:n:i:a:C:c:dqh";
+    const char short_options[] = "m:s:b:o:f:r:n:i:a:g:C:c:dqh";
     const struct option long_options[] = {
        {"mode", optional_argument, NULL, 'm'},
 
@@ -115,6 +113,7 @@ int main (int argc, char **argv)
        {"acodec", optional_argument, NULL, 'C'},
        {"samplerate", optional_argument, NULL, 'r'},
        {"abitrate", optional_argument, NULL, 'a'},
+       {"again", optional_argument, NULL, 'g'},
        {"input", optional_argument, NULL, 'i'},
        {0, 0, 0, 0}
     };
@@ -183,6 +182,9 @@ int main (int argc, char **argv)
                 break;
             case 'a':
                 crusher.audio_bitrate = atoi(optarg);
+                break;
+            case 'g':
+                crusher.audio_gain = atoi(optarg);
                 break;
             case 'r':
                 crusher.audio_samplerate = atoi(optarg);
