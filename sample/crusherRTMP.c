@@ -48,6 +48,7 @@ void usage(char *name)
        "-b, --bitrate    : Specify video output bitrate (default: 1500Kbps)\n"
        "-a, --abitrate   : Specify audio output bitrate (default: 128Kbps)\n"
        "-c, --channels   : Specify audio channels (default: 2)\n"
+       "-g, --again      : Specify audio gain (default: 0), -120...120 (step: 5)\n"
        "\n"
        "Application-specific options:\n"
        "-f, --file       : Write stream to file (default: don't write)\n"
@@ -142,7 +143,7 @@ int main (int argc, char **argv)
     /******************************************************
      * Getopt
      ******************************************************/
-    const char short_options[] = "n:i:s:b:a:c:f:dqh";
+    const char short_options[] = "n:i:s:b:a:c:g:f:dqh";
     const struct option long_options[] = {
        {"num", optional_argument, NULL, 'n'},
        {"input", optional_argument, NULL, 'i'},
@@ -151,6 +152,7 @@ int main (int argc, char **argv)
        {"bitrate", optional_argument, NULL, 'b'},
        {"abitrate", optional_argument, NULL, 'a'},
        {"channels", optional_argument, NULL, 'c'},
+       {"again", optional_argument, NULL, 'g'},
 
        {"file", optional_argument, NULL, 'f'},
        {"debug", no_argument, NULL, 'd'},
@@ -190,6 +192,9 @@ int main (int argc, char **argv)
                 break;
             case 'c':
                 crusher.audio_channels = atoi(optarg);
+                break;
+            case 'g':
+                crusher.audio_gain = atoi(optarg);
                 break;
 
             case 'f':
